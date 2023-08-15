@@ -1,0 +1,22 @@
+Dockerfile
+.dockerignore
+node_modules
+dist
+uploads
+npm-debug.log
+README.md
+.env
+
+.git
+.coverage
+.coverage.*
+.aws
+
+# misc
+.DS_Store
+*.pem
+
+# IDE
+.idea
+.awcache
+.vscode
