@@ -4,9 +4,9 @@ Just a boilerplate for starting backends on different languages for comparison.
 
 ## Launching comparison on a remote server
 
-1. Clone this repository and run the script
+1. Clone this repository, go to `backend-comparison` directory and run the script
 
-   Start all backend services
+   Start all backend services (in docker)
 
    ```bash
    sh start_backends.sh
@@ -24,26 +24,8 @@ Just a boilerplate for starting backends on different languages for comparison.
    | /ping | Returns string "pong" |
    | /users | Returns list of users with posts |
 
-### Other:
-
-git clone https://github.com/buralex/backend-comparison.git
+### Commands for benchmarks:
 
 wrk -t4 -c100 -d10s http://localhost:3028/users
 
 wrk -t4 -c100 -d10s http://localhost:3029/users
-
-If you are using "Alpine Linux", then next commands may be useful:
-
-```
-apk add wrk
-apk add htop
-apk add nano
-```
-
-### Some benchmarks
-
-Test /ping
-![Alt text](image-2.png)
-
-Test /users
-![Alt text](image-3.png)
