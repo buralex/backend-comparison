@@ -1,0 +1,28 @@
+{
+  "name": "fastify-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "sh start_dev.sh",
+    "build": "tsc",
+    "migration-generate": "npm run migration-run && typeorm-ts-node-commonjs --dataSource src/mainDb/mainDataSource.ts migration:generate --pretty",
+    "migration-create": "typeorm-ts-node-commonjs migration:create",
+    "migration-run": "typeorm-ts-node-commonjs --dataSource src/mainDb/mainDataSource.ts migration:run",
+    "migration-revert": "typeorm-ts-node-commonjs --dataSource src/mainDb/mainDataSource.ts migration:revert"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^4.21.0",
+    "pg": "^8.11.3",
+    "typeorm": "^0.3.17"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
