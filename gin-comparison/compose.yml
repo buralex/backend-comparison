@@ -1,6 +1,8 @@
 services:
   main-api:
     image: buralex/public:$PROJECT_NAME-$DEPLOY_ENV-backend-main-api
+    healthcheck:
+      test: ["CMD", "curl", "localhost:${MAIN_API_SERVICE_PORT}/ping"]
     ports:
       - ${MAIN_API_SERVICE_PORT}:${MAIN_API_SERVICE_PORT}
     env_file:
@@ -11,17 +13,15 @@ services:
   postgres-db:
     # This is "amd64 image". To check ubuntu architecture, run: "dpkg --print-architecture"
     image: postgres:15.3@sha256:5eea7fae473638d38f2bd40a80b60baeb90d133a3bfb2a0315e9d1ff2e1e2218
-    # volumes:
-    #   - postgres-db-data:/var/lib/postgresql/data
+
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
-        ]
+      test: ["CMD", "pg_isready"]
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${POSTGRES_EXPOSE_PORT}:5432"
     env_file:
       - .env.$DEPLOY_ENV
-# volumes:
-#   postgres-db-data:
+    volumes:
+      - postgres-db-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-db-data:

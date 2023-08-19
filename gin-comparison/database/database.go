@@ -22,14 +22,11 @@ var DB Dbinstance
 func ConnectDb() {
 	dbHost := os.Getenv("POSTGRES_HOST")
 	dbPort := os.Getenv("POSTGRES_PORT")
-    if dbHost != "localhost" {
-        dbPort = "5432"
-    }
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DB")
 
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s",
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=prefer",
 	dbHost, dbPort, dbUser, dbPassword, dbName)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
@@ -48,11 +45,7 @@ func ConnectDb() {
 		time.Sleep(retryInterval)
 	}
 
-	// // SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	// sqlDB.SetMaxIdleConns(10)
-
-	// // SetMaxOpenConns sets the maximum number of open connections to the database.
-	// sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxOpenConns(10)
 
 	if err != nil {
 		log.Fatal("Failed to connect to database. \n", err)
