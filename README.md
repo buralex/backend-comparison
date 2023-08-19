@@ -39,3 +39,11 @@ apk add wrk
 apk add htop
 apk add nano
 ```
+
+### Some benchmarks
+
+Test /ping
+![Alt text](image-2.png)
+
+Test /users
+![Alt text](image-3.png)
