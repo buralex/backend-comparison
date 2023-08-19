@@ -6,7 +6,7 @@ check_app_status() {
 
   while true; do
     response=$(curl -s -o /dev/null -w "%{http_code}" $app_url)
-    if [ "$response" == "200" ]; then
+    if [ "$response" = "200" ]; then
       echo "app is up and running!"
       break
     else
