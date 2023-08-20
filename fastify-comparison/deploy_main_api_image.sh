@@ -7,14 +7,12 @@ MAIN_API_IMAGE_NAME=buralex/public:$PROJECT_NAME-$DEPLOY_ENV-backend-main-api
 
 echo "image name: $MAIN_API_IMAGE_NAME"
 
-# try/catch https://stackoverflow.com/a/25554904/8083104
-set +e
-bash -e <<EOF
-  docker build -t $MAIN_API_IMAGE_NAME .
-  docker push $MAIN_API_IMAGE_NAME
-EOF
-errorCode=$?
-if [ $errorCode -ne 0 ]; then
-  echo "We have an error $errorCode"
-  exit $errorCode
+docker build -t $MAIN_API_IMAGE_NAME .
+docker push $MAIN_API_IMAGE_NAME
+
+if [ $? -eq 0 ]; then
+    echo "Docker build and push command executed successfully."
+else
+    echo "Error: Docker build and push command failed."
+    exit 1
 fi
