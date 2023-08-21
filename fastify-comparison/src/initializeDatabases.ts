@@ -2,31 +2,21 @@ import { mainDataSource } from "./mainDb/mainDataSource";
 import { delay } from "./utils";
 
 export const initializeDatabases = async () => {
-  const maxRetries = 10;
-  const retryInterval = 5000;
-  let retries = 0;
+  const maxAttempts = 10;
+  const retryIntervalMs = 3000;
 
-  while (retries < maxRetries) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    console.info(`Trying to connect main database (attempt ${attempt})`);
     try {
       await mainDataSource.initialize();
       console.info("Main database connected");
-      break;
+      return;
     } catch (error) {
       console.error(error, "Main database connection error");
-      retries++;
-      if (retries < maxRetries) {
-        console.info(
-          `Retrying to connect to main database in ${
-            retryInterval / 1000
-          } seconds (attempt ${retries})`
-        );
-        await delay(retryInterval);
-      } else {
-        console.error(
-          "Max retries to connect to main database reached. Exiting"
-        );
-        process.exit(1);
-      }
+      await delay(retryIntervalMs);
     }
   }
+
+  console.info("All reconnection attempts to main database failed. Exiting");
+  process.exit(1);
 };
