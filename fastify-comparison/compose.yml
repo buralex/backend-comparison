@@ -13,9 +13,13 @@ services:
   postgres-db:
     # This is "amd64 image". To check ubuntu architecture, run: "dpkg --print-architecture"
     image: postgres:15.3@sha256:5eea7fae473638d38f2bd40a80b60baeb90d133a3bfb2a0315e9d1ff2e1e2218
-
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      # Specifying the user in the test command is necessary to avoid the warning "FATAL: role does not exist"
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+        ]
     ports:
       - "${POSTGRES_EXPOSE_PORT}:5432"
     env_file:
