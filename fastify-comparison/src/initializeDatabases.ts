@@ -6,7 +6,7 @@ export const initializeDatabases = async () => {
   const retryIntervalMs = 3000;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    console.info(`Trying to connect main database (attempt ${attempt})`);
+    console.info(`Trying to connect to main database (attempt ${attempt})`);
     try {
       await mainDataSource.initialize();
       console.info("Main database connected");

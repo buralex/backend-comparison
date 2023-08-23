@@ -1,10 +1,11 @@
 import Fastify from "fastify";
+import { stdTimeFunctions } from "pino";
 import { userRepository } from "./users/user.repository";
 import { initializeDatabases } from "./initializeDatabases";
 import { initialSeed } from "./seed/seedUsers";
 
 const app = Fastify({
-  logger: true,
+  logger: { timestamp: stdTimeFunctions.isoTime },
 });
 
 app.get("/ping", async function handler(request, reply) {
