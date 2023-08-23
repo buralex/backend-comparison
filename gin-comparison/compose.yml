@@ -7,6 +7,11 @@ services:
       - ${MAIN_API_SERVICE_PORT}:${MAIN_API_SERVICE_PORT}
     env_file:
       - .env.$DEPLOY_ENV
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 5
     depends_on:
       - postgres-db
 
@@ -24,6 +29,11 @@ services:
       - "${POSTGRES_EXPOSE_PORT}:5432"
     env_file:
       - .env.$DEPLOY_ENV
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 5
     volumes:
       - postgres-db-data:/var/lib/postgresql/data
 
