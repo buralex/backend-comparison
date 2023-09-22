@@ -25,7 +25,7 @@ sed -i.bak "s/POSTGRES_HOST=.*/POSTGRES_HOST=postgres-db/" .env.prod
 sed -i.bak "s/POSTGRES_PORT=.*/POSTGRES_PORT=5432/" .env.prod
 set -o allexport && . ./.env.prod && set +o allexport
 
-docker compose -f compose.yml --project-name $PROJECT_NAME up --detach --pull always
+docker stack deploy --compose-file compose.yml $PROJECT_NAME-backend
 
 check_app_status "http://localhost:$MAIN_API_SERVICE_PORT/ping"
 
@@ -42,7 +42,7 @@ sed -i.bak "s/POSTGRES_HOST=.*/POSTGRES_HOST=postgres-db/" .env.prod
 sed -i.bak "s/POSTGRES_PORT=.*/POSTGRES_PORT=5432/" .env.prod
 set -o allexport && . ./.env.prod && set +o allexport
 
-docker compose -f compose.yml --project-name $PROJECT_NAME up --detach --pull always
+docker stack deploy --compose-file compose.yml $PROJECT_NAME-backend
 
 check_app_status "http://localhost:$MAIN_API_SERVICE_PORT/ping"
 
