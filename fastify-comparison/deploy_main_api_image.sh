@@ -3,7 +3,7 @@
 [ -z "$PROJECT_NAME" ] && echo "Empty PROJECT_NAME" && exit 1
 [ -z "$DEPLOY_ENV" ] && echo "Empty DEPLOY_ENV" && exit 1
 
-MAIN_API_IMAGE_NAME=buralex/$PROJECT_NAME-main-api
+MAIN_API_IMAGE_NAME=buralex/public:$PROJECT_NAME-main-api
 
 echo "image name: $MAIN_API_IMAGE_NAME"
 
