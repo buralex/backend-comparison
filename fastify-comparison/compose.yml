@@ -1,6 +1,6 @@
 services:
   main-api:
-    image: buralex/public:$PROJECT_NAME-main-api
+    image: $MAIN_API_IMAGE_NAME
     healthcheck:
       test: ["CMD", "curl", "localhost:${MAIN_API_SERVICE_PORT}/ping"]
     ports:
