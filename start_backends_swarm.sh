@@ -21,7 +21,7 @@ check_app_status() {
 cd ~/backend-comparison/fastify-comparison
 cp .env.example .env.prod
 sed -i.bak "s/DEPLOY_ENV=.*/DEPLOY_ENV=prod/" .env.prod
-sed -i.bak "s/POSTGRES_HOST=.*/POSTGRES_HOST=postgres-db/" .env.prod
+sed -i.bak "s/POSTGRES_HOST=.*/POSTGRES_HOST=fastify-comparison-backend_postgres-db/" .env.prod
 sed -i.bak "s/POSTGRES_PORT=.*/POSTGRES_PORT=5432/" .env.prod
 set -o allexport && . ./.env.prod && set +o allexport
 
@@ -38,7 +38,7 @@ curl http://localhost:$MAIN_API_SERVICE_PORT/helpers/seed
 cd ~/backend-comparison/gin-comparison
 cp .env.example .env.prod
 sed -i.bak "s/DEPLOY_ENV=.*/DEPLOY_ENV=prod/" .env.prod
-sed -i.bak "s/POSTGRES_HOST=.*/POSTGRES_HOST=postgres-db/" .env.prod
+sed -i.bak "s/POSTGRES_HOST=.*/POSTGRES_HOST=gin-comparison-backend_postgres-db/" .env.prod
 sed -i.bak "s/POSTGRES_PORT=.*/POSTGRES_PORT=5432/" .env.prod
 set -o allexport && . ./.env.prod && set +o allexport
 
