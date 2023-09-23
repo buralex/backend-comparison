@@ -21,6 +21,35 @@ app.get("/helpers/seed", async function handler(request, reply) {
   return { message: "Database seeded successfully" };
 });
 
+app.get<{ Params: { n: string } }>(
+  "/fib-loop/:n",
+  async function handler(request, reply) {
+    const n = parseInt(request.params.n);
+    let index;
+    var fib = [0, 1]; // Initialize array!
+
+    for (index = 2; index <= n; index++) {
+      // Next fibonacci number = previous + one before previous
+      // Translated to JavaScript:
+      fib[index] = fib[index - 2] + fib[index - 1];
+    }
+
+    return `Fibonacci(${n}) = ${fib[fib.length - 1]}`;
+  }
+);
+
+function fibonacci(n) {
+  if (n <= 0) return 0;
+  else if (n === 1) return 1;
+  else return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+app.get<{ Params: { n: string } }>("/fib/:n", (req, res) => {
+  const n = parseInt(req.params.n);
+  const result = fibonacci(n);
+  return `Fibonacci(${n}) = ${result}`;
+});
+
 const start = async () => {
   await initializeDatabases();
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/buralex/backend-comparison/gin-comparison/database"
@@ -11,6 +12,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func fibonacci(n int) int {
+    if n <= 0 {
+        return 0
+    } else if n == 1 {
+        return 1
+    }
+    return fibonacci(n-1) + fibonacci(n-2)
+}
+
+func calculateFibonacci(ctx *gin.Context) {
+	n, err := strconv.Atoi(ctx.Param("n"))
+	if err != nil || n < 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	result := fibonacci(n)
+	ctx.String(200, "Fibonacci(%d) = %d", n, result)
+}
 
 func main() {
     database.ConnectDb()
@@ -19,6 +39,8 @@ func main() {
     router.GET("/ping", func(ctx *gin.Context) {
         ctx.String(200, "pong")
     })
+
+	router.GET("/fib/:n", calculateFibonacci)
 
     router.GET("/users", func(ctx *gin.Context) {
 		var users []models.User
