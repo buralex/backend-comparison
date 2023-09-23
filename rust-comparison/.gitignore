@@ -18,8 +18,12 @@
 # For multipart example
 upload.png
 
-# any dotenv files
+uploads
 .env
+.env.*
+.env_*
+!.env.example
+!.env.tests
 
 # file uploads
 /tmp
