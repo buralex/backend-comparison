@@ -31,3 +31,10 @@ jobs:
           cp .env.example .env.prod 
           set -o allexport && source .env.prod && set +o allexport
           DEPLOY_ENV=prod sh deploy_main_api_image.sh
+
+      - name: Build and Push rust-comparison Docker images
+        run: |
+          cd rust-comparison
+          cp .env.example .env.prod 
+          set -o allexport && source .env.prod && set +o allexport
+          DEPLOY_ENV=prod sh deploy_main_api_image.sh
