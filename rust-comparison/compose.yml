@@ -1,0 +1,40 @@
+services:
+  main-api:
+    image: $MAIN_API_IMAGE_NAME
+    healthcheck:
+      test: ["CMD", "curl", "localhost:${MAIN_API_SERVICE_PORT}/ping"]
+    ports:
+      - ${MAIN_API_SERVICE_PORT}:${MAIN_API_SERVICE_PORT}
+    env_file:
+      - .env.$DEPLOY_ENV
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 5
+    # depends_on:
+    #   - postgres-db
+#   postgres-db:
+#     # This is "amd64 image". To check ubuntu architecture, run: "dpkg --print-architecture"
+#     image: postgres:15.3@sha256:5eea7fae473638d38f2bd40a80b60baeb90d133a3bfb2a0315e9d1ff2e1e2218
+#     healthcheck:
+#       # Specifying the user in the test command is necessary to avoid the warning "FATAL: role does not exist"
+#       test:
+#         [
+#           "CMD-SHELL",
+#           "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+#         ]
+#     ports:
+#       - "${POSTGRES_EXPOSE_PORT}:5432"
+#     env_file:
+#       - .env.$DEPLOY_ENV
+#     logging:
+#       driver: json-file
+#       options:
+#         max-size: 10m
+#         max-file: 5
+#     volumes:
+#       - postgres-db-data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres-db-data:
