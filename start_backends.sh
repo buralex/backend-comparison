@@ -34,7 +34,6 @@ curl http://localhost:$MAIN_API_SERVICE_PORT/helpers/seed
 # ============================================
 #                  gin
 # ============================================
-# cd ..
 cd ~/backend-comparison/gin-comparison
 cp .env.example .env.prod
 sed -i.bak "s/DEPLOY_ENV=.*/DEPLOY_ENV=prod/" .env.prod
@@ -51,7 +50,6 @@ curl http://localhost:$MAIN_API_SERVICE_PORT/helpers/seed
 # ============================================
 #                  rust
 # ============================================
-# cd ..
 cd ~/backend-comparison/rust-comparison
 cp .env.example .env.prod
 sed -i.bak "s/DEPLOY_ENV=.*/DEPLOY_ENV=prod/" .env.prod
