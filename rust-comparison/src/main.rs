@@ -103,9 +103,7 @@ mod handlers {
 
   pub async fn get_users(db_pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
       let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
-
       let users = db::get_users(&client).await?;
-
       Ok(HttpResponse::Ok().json(users))
   }
 
@@ -124,11 +122,40 @@ mod handlers {
 }
 
 use ::config::Config;
-use actix_web::{web, App, HttpServer};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use handlers::{add_user, get_users};
 use tokio_postgres::NoTls;
 
 use crate::config::ExampleConfig;
+
+#[get("/ping")]
+async fn ping() -> impl Responder {             
+  HttpResponse::Ok().body("pong")
+}
+
+#[post("/echo")]
+async fn echo(req_body: String) -> impl Responder {
+  HttpResponse::Ok().body(req_body)
+}
+
+async fn manual_hello() -> impl Responder {
+  HttpResponse::Ok().body("Hey there!")
+}
+
+fn fibonacci(n: u32) -> u64 {
+  match n {
+      0 => 0,
+      1 => 1,
+      _ => fibonacci(n - 1) + fibonacci(n - 2),
+  }
+}
+
+#[get("/fib/{n}")]
+async fn calculate_fibonacci(path: web::Path<u32>) -> impl Responder {
+  let n = path.into_inner();
+  let result = fibonacci(n);
+  HttpResponse::Ok().body(format!("Fibonacci({n}) = {result}"))
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -148,6 +175,10 @@ async fn main() -> std::io::Result<()> {
               .route(web::post().to(add_user))
               .route(web::get().to(get_users)),
       )
+      .service(ping)
+      .service(echo)
+      .service(calculate_fibonacci)
+      .route("/hey", web::get().to(manual_hello))
   })
   .bind(format!("0.0.0.0:{}", config.main_api_service_port))?
   .run();
