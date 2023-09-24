@@ -18,16 +18,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push gin-comparison Docker image
+      - name: Build and Push go-comparison Docker image
         run: |
-          cd gin-comparison
+          cd go-comparison
           cp .env.example .env.prod 
           set -o allexport && source .env.prod && set +o allexport
           DEPLOY_ENV=prod sh deploy_main_api_image.sh
 
-      - name: Build and Push fastify-comparison Docker images
+      - name: Build and Push nodejs-comparison Docker images
         run: |
-          cd fastify-comparison
+          cd nodejs-comparison
           cp .env.example .env.prod 
           set -o allexport && source .env.prod && set +o allexport
           DEPLOY_ENV=prod sh deploy_main_api_image.sh

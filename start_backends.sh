@@ -18,7 +18,7 @@ check_app_status() {
 # ============================================
 #                  fastify
 # ============================================
-cd ~/backend-comparison/fastify-comparison
+cd ~/backend-comparison/nodejs-comparison
 cp .env.example .env.prod
 sed -i.bak "s/DEPLOY_ENV=.*/DEPLOY_ENV=prod/" .env.prod
 sed -i.bak "s/POSTGRES_HOST=.*/POSTGRES_HOST=postgres-db/" .env.prod
@@ -34,7 +34,7 @@ curl http://localhost:$MAIN_API_SERVICE_PORT/helpers/seed
 # ============================================
 #                  gin
 # ============================================
-cd ~/backend-comparison/gin-comparison
+cd ~/backend-comparison/go-comparison
 cp .env.example .env.prod
 sed -i.bak "s/DEPLOY_ENV=.*/DEPLOY_ENV=prod/" .env.prod
 sed -i.bak "s/POSTGRES_HOST=.*/POSTGRES_HOST=postgres-db/" .env.prod

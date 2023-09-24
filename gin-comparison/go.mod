@@ -1,4 +1,4 @@
-module github.com/buralex/backend-comparison/gin-comparison
+module github.com/buralex/backend-comparison/go-comparison
 
 go 1.21.0
 

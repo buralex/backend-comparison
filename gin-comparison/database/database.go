@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/buralex/backend-comparison/gin-comparison/models"
+	"github.com/buralex/backend-comparison/go-comparison/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

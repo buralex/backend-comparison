@@ -3,14 +3,14 @@
 # ============================================
 #                  fastify
 # ============================================
-cd ~/backend-comparison/fastify-comparison
+cd ~/backend-comparison/nodejs-comparison
 set -o allexport && . ./.env.prod && set +o allexport
 docker compose -f compose.yml --project-name $PROJECT_NAME down --volumes
 
 # ============================================
 #                  gin
 # ============================================
-cd ~/backend-comparison/gin-comparison
+cd ~/backend-comparison/go-comparison
 set -o allexport && . ./.env.prod && set +o allexport
 docker compose -f compose.yml --project-name $PROJECT_NAME down --volumes
 

@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/buralex/backend-comparison/gin-comparison/database"
-	"github.com/buralex/backend-comparison/gin-comparison/models"
+	"github.com/buralex/backend-comparison/go-comparison/database"
+	"github.com/buralex/backend-comparison/go-comparison/models"
 	"github.com/gin-gonic/gin"
 )
 
