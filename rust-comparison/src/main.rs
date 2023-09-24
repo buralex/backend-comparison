@@ -2,7 +2,7 @@ mod config {
   use serde::Deserialize;
   #[derive(Debug, Default, Deserialize)]
   pub struct ExampleConfig {
-      pub server_addr: String,
+      pub main_api_service_port: String,
       pub pg: deadpool_postgres::Config,
   }
 }
@@ -151,9 +151,9 @@ async fn main() -> std::io::Result<()> {
               .route(web::get().to(get_users)),
       )
   })
-  .bind(config.server_addr.clone())?
+  .bind(format!("0.0.0.0:{}", config.main_api_service_port))?
   .run();
-  println!("Server running at http://{}/", config.server_addr);
+  println!("Server running at http://0.0.0.0:{}", config.main_api_service_port);
 
   server.await
 }
