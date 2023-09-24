@@ -168,9 +168,10 @@ mod handlers {
 }
 
 use ::config::Config;
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, middleware::Logger, post, web, App, HttpResponse, HttpServer, Responder};
 use db::init_db_schema;
 use deadpool_postgres::Client;
+use env_logger::Env;
 use handlers::{add_user, get_users, seed_users, sleep_db};
 use tokio_postgres::NoTls;
 
@@ -221,8 +222,11 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to apply schema");
 
+    env_logger::init_from_env(Env::default().default_filter_or("info"));
+
     let server = HttpServer::new(move || {
         App::new()
+            .wrap(Logger::default())
             .app_data(web::Data::new(pool.clone()))
             .service(
                 web::resource("/users")
