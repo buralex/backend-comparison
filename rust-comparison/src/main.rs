@@ -125,7 +125,6 @@ mod handlers {
 
 use ::config::Config;
 use actix_web::{web, App, HttpServer};
-use dotenv::dotenv;
 use handlers::{add_user, get_users};
 use tokio_postgres::NoTls;
 
@@ -133,10 +132,9 @@ use crate::config::ExampleConfig;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-  dotenv().ok();
 
   let config_ = Config::builder()
-      .add_source(::config::Environment::default())
+      .add_source(::config::Environment::default().separator("__"))
       .build()
       .unwrap();
 
