@@ -10,6 +10,12 @@ Export environment variables:
 set -o allexport && source .env.local && set +o allexport
 ```
 
+Start a database for backend
+
+```bash
+docker compose -f compose.yml --project-name $PROJECT_NAME up --detach postgres-db
+```
+
 ```bash
 cargo run
 ```

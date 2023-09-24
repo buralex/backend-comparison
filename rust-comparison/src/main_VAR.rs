@@ -2,7 +2,7 @@ mod config {
   use serde::Deserialize;
   #[derive(Debug, Default, Deserialize)]
   pub struct ExampleConfig {
-      pub server_addr: String,
+      pub main_api_service_port: String,
       pub pg: deadpool_postgres::Config,
   }
 }
@@ -136,13 +136,17 @@ async fn main() -> std::io::Result<()> {
   dotenv().ok();
 
   let config_ = Config::builder()
+    //   .add_source(::config::Environment::default().separator("__"))
       .add_source(::config::Environment::default())
       .build()
       .unwrap();
 
   let config: ExampleConfig = config_.try_deserialize().unwrap();
-
+  println!("{:?}",config);
   let pool = config.pg.create_pool(None, NoTls).unwrap();
+
+//   let port = env::var("MAIN_API_SERVICE_PORT").unwrap().parse::<u16>().unwrap();
+//   let port = config.main_api_service_port.parse::<u16>().unwrap();
 
   let server = HttpServer::new(move || {
       App::new().app_data(web::Data::new(pool.clone())).service(
@@ -151,9 +155,10 @@ async fn main() -> std::io::Result<()> {
               .route(web::get().to(get_users)),
       )
   })
-  .bind(config.server_addr.clone())?
+//   .bind(("0.0.0.0:", port.clone()))?
+  .bind(("0.0.0.0:", 3030))?
   .run();
-  println!("Server running at http://{}/", config.server_addr);
+  println!("Server running at http://0.0.0.0:{}/", config.main_api_service_port);
 
   server.await
 }
