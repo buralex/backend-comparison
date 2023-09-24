@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4"
+config = "0.13.3"
+tokio-postgres = "0.7.10"

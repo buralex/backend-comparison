@@ -1,6 +1,7 @@
 services:
   main-api:
-    image: $MAIN_API_IMAGE_NAME
+    # image: $MAIN_API_IMAGE_NAME
+    image: aaa-rust # TODO remove
     healthcheck:
       test: ["CMD", "curl", "localhost:${MAIN_API_SERVICE_PORT}/ping"]
     ports:
