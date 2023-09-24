@@ -19,3 +19,9 @@ docker compose -f compose.yml --project-name $PROJECT_NAME up --detach postgres-
 ```bash
 cargo run
 ```
+
+To format code
+
+```bash
+cargo fmt
+```

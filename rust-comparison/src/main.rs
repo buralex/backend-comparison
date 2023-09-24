@@ -93,6 +93,22 @@ mod db {
             .pop()
             .ok_or(MyError::NotFound) // more applicable for SELECTs
     }
+
+    pub async fn sleep_10_sec(client: &Client) -> Result<Vec<tokio_postgres::Row>, MyError> {
+        let stmt = include_str!("./sql/sleep_10_sec.sql");
+        let stmt = client.prepare(&stmt).await?;
+
+        let results = client.query(&stmt, &[]).await?;
+
+        Ok(results)
+    }
+
+    pub async fn init_db_schema(client: &Client) -> Result<(), MyError> {
+        let schema_sql = include_str!("./sql/schema.sql");
+        client.batch_execute(schema_sql).await?;
+
+        Ok(())
+    }
 }
 
 mod handlers {
@@ -120,32 +136,40 @@ mod handlers {
         Ok(HttpResponse::Ok().json(new_user))
     }
 
-    pub async fn seed_users(
-        db_pool: web::Data<Pool>,
-    ) -> Result<HttpResponse, Error> {
+    pub async fn seed_users(db_pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
         let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
-  
+
         for i in 0..5 {
-          let user_number = i + 1;
-          let unique_username = format!("user{}", user_number); 
-  
-          let user_info = User {
-              email: format!("user{}@example.com", user_number),
-              first_name: format!("John{}", user_number),
-              last_name: "Doe".to_string(),
-              username: unique_username,
-          };
-  
-          db::add_user(&client, user_info).await?;
-      }
-    
+            let user_number = i + 1;
+            let unique_username = format!("user{}", user_number);
+
+            let user_info = User {
+                email: format!("user{}@example.com", user_number),
+                first_name: format!("John{}", user_number),
+                last_name: "Doe".to_string(),
+                username: unique_username,
+            };
+
+            db::add_user(&client, user_info).await?;
+        }
+
         Ok(HttpResponse::Ok().json("Users seeded successfully"))
+    }
+
+    pub async fn sleep_db(db_pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
+        let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+
+        db::sleep_10_sec(&client).await?;
+
+        Ok(HttpResponse::Ok().json("success"))
     }
 }
 
 use ::config::Config;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use handlers::{add_user, get_users, seed_users};
+use db::init_db_schema;
+use deadpool_postgres::Client;
+use handlers::{add_user, get_users, seed_users, sleep_db};
 use tokio_postgres::NoTls;
 
 use crate::config::ExampleConfig;
@@ -190,6 +214,11 @@ async fn main() -> std::io::Result<()> {
 
     let pool = config.pg.create_pool(None, NoTls).unwrap();
 
+    let client: Client = pool.get().await.unwrap();
+    init_db_schema(&client)
+        .await
+        .expect("Failed to apply schema");
+
     let server = HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
@@ -203,6 +232,7 @@ async fn main() -> std::io::Result<()> {
             .service(calculate_fibonacci)
             .route("/hey", web::get().to(manual_hello))
             .route("/helpers/seed", web::get().to(seed_users))
+            .route("/helpers/sleep-db", web::get().to(sleep_db))
     })
     .bind(format!("0.0.0.0:{}", config.main_api_service_port))?
     .run();
