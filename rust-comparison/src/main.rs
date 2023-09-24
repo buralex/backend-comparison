@@ -119,11 +119,24 @@ mod handlers {
 
       Ok(HttpResponse::Ok().json(new_user))
   }
+
+  pub async fn seed_users(
+    user: web::Json<User>,
+    db_pool: web::Data<Pool>,
+) -> Result<HttpResponse, Error> {
+    let user_info: User = user.into_inner();
+
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+
+    let new_user = db::add_user(&client, user_info).await?;
+
+    Ok(HttpResponse::Ok().json(new_user))
+}
 }
 
 use ::config::Config;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use handlers::{add_user, get_users};
+use handlers::{add_user, get_users, seed_users};
 use tokio_postgres::NoTls;
 
 use crate::config::ExampleConfig;
@@ -173,12 +186,13 @@ async fn main() -> std::io::Result<()> {
       App::new().app_data(web::Data::new(pool.clone())).service(
           web::resource("/users")
               .route(web::post().to(add_user))
-              .route(web::get().to(get_users)),
+              .route(web::get().to(get_users))
       )
       .service(ping)
       .service(echo)
       .service(calculate_fibonacci)
       .route("/hey", web::get().to(manual_hello))
+      .route("/helpers/seed", web::get().to(seed_users))
   })
   .bind(format!("0.0.0.0:{}", config.main_api_service_port))?
   .run();
