@@ -12,7 +12,7 @@ mod models {
     use tokio_pg_mapper_derive::PostgresMapper;
 
     #[derive(Deserialize, PostgresMapper, Serialize)]
-    #[pg_mapper(table = "users")] // singular 'user' is a keyword..
+    #[pg_mapper(table = "app_user")]
     pub struct User {
         pub email: String,
         pub first_name: String,
@@ -74,6 +74,8 @@ mod db {
     pub async fn add_user(client: &Client, user_info: User) -> Result<User, MyError> {
         let _stmt = include_str!("./sql/add_user.sql");
         let _stmt = _stmt.replace("$table_fields", &User::sql_table_fields());
+        // println!("statement: {:?}", &_stmt);
+
         let stmt = client.prepare(&_stmt).await.unwrap();
 
         client
