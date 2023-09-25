@@ -28,7 +28,7 @@ mod models {
     pub struct Post {
         pub id: Option<Uuid>,
         pub title: String,
-        pub user_id: String,
+        pub app_user_id: Uuid,
         pub created_at: Option<DateTime<Utc>>,
         pub updated_at: Option<DateTime<Utc>>,
     }
@@ -67,7 +67,7 @@ mod db {
     use deadpool_postgres::Client;
     use tokio_pg_mapper::FromTokioPostgresRow;
 
-    use crate::{errors::MyError, models::User};
+    use crate::{errors::MyError, models::User, models::Post};
 
     pub async fn get_users(client: &Client) -> Result<Vec<User>, MyError> {
         let stmt = include_str!("./sql/get_users.sql");
@@ -87,10 +87,7 @@ mod db {
     pub async fn add_user(client: &Client, user_info: User) -> Result<User, MyError> {
         let _stmt = include_str!("./sql/add_user.sql");
         let _stmt = _stmt.replace("$table_fields", &User::sql_table_fields());
-        // println!("statement: {:?}", &_stmt);
-
         let stmt = client.prepare(&_stmt).await.unwrap();
-
         client
             .query(&stmt, &[&user_info.email, &user_info.full_name])
             .await?
@@ -98,7 +95,21 @@ mod db {
             .map(|row| User::from_row_ref(row).unwrap())
             .collect::<Vec<User>>()
             .pop()
-            .ok_or(MyError::NotFound) // more applicable for SELECTs
+            .ok_or(MyError::NotFound)
+    }
+
+    pub async fn create_post(client: &Client, post_info: Post) -> Result<Post, MyError> {
+        let _stmt = include_str!("./sql/create_post.sql");
+        let _stmt = _stmt.replace("$table_fields", &Post::sql_table_fields());
+        let stmt = client.prepare(&_stmt).await.unwrap();
+        client
+            .query(&stmt, &[&post_info.title, &post_info.app_user_id])
+            .await?
+            .iter()
+            .map(|row| Post::from_row_ref(row).unwrap())
+            .collect::<Vec<Post>>()
+            .pop()
+            .ok_or(MyError::NotFound)
     }
 
     pub async fn sleep_10_sec(client: &Client) -> Result<Vec<tokio_postgres::Row>, MyError> {
@@ -113,7 +124,6 @@ mod db {
     pub async fn init_db_schema(client: &Client) -> Result<(), MyError> {
         let schema_sql = include_str!("./sql/schema.sql");
         client.batch_execute(schema_sql).await?;
-
         Ok(())
     }
 }
@@ -121,8 +131,7 @@ mod db {
 mod handlers {
     use actix_web::{web, Error, HttpResponse};
     use deadpool_postgres::{Client, Pool};
-
-    use crate::{db, errors::MyError, models::User};
+    use crate::{db, errors::MyError, models::User, models::Post};
 
     pub async fn get_users(db_pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
         let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
@@ -135,11 +144,8 @@ mod handlers {
         db_pool: web::Data<Pool>,
     ) -> Result<HttpResponse, Error> {
         let user_info: User = user.into_inner();
-
         let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
-
         let new_user = db::add_user(&client, user_info).await?;
-
         Ok(HttpResponse::Ok().json(new_user))
     }
 
@@ -155,8 +161,20 @@ mod handlers {
                 created_at: None,
                 updated_at: None,
             };
+            let new_user = db::add_user(&client, user_info).await?;
 
-            db::add_user(&client, user_info).await?;
+            for j in 0..2 {
+                let post_info = Post {
+                    id: None,
+                    title: format!("Post_{}_by_user_{}", j + 1, user_number),
+                    app_user_id: new_user.id.clone().unwrap(),
+                    created_at: None,
+                    updated_at: None,
+                };
+    
+                db::create_post(&client, post_info).await?;
+
+            }
         }
 
         Ok(HttpResponse::Ok().json("Users seeded successfully"))
