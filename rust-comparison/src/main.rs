@@ -173,6 +173,8 @@ use db::init_db_schema;
 use deadpool_postgres::Client;
 use env_logger::Env;
 use handlers::{add_user, get_users, seed_users, sleep_db};
+use std::time::Duration;
+use tokio::time::sleep;
 use tokio_postgres::NoTls;
 
 use crate::config::ExampleConfig;
@@ -214,8 +216,21 @@ async fn main() -> std::io::Result<()> {
         .unwrap();
 
     let config: ExampleConfig = config_.try_deserialize().unwrap();
-
     let pool = config.pg.create_pool(None, NoTls).unwrap();
+
+    loop {
+        match pool.get().await {
+            Ok(conn) => {
+                let _ = conn.query("SELECT 1", &[]).await;
+                println!("Connected to database");
+                break;
+            }
+            Err(err) => {
+                eprintln!("Failed to connect to the database {}", err);
+                sleep(Duration::from_secs(5)).await;
+            }
+        }
+    }
 
     let client: Client = pool.get().await.unwrap();
     init_db_schema(&client)
