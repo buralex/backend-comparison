@@ -1,3 +1,3 @@
-INSERT INTO app_user(email, first_name, last_name, username)
-VALUES ($1, $2, $3, $4)
+INSERT INTO app_user(email, full_name)
+VALUES ($1, $2)
 RETURNING $table_fields;

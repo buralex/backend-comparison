@@ -8,16 +8,29 @@ mod config {
 }
 
 mod models {
+    use chrono::{DateTime, Utc};
     use serde::{Deserialize, Serialize};
     use tokio_pg_mapper_derive::PostgresMapper;
+    use uuid::Uuid;
 
     #[derive(Deserialize, PostgresMapper, Serialize)]
     #[pg_mapper(table = "app_user")]
     pub struct User {
+        pub id: Option<Uuid>,
         pub email: String,
-        pub first_name: String,
-        pub last_name: String,
-        pub username: String,
+        pub full_name: String,
+        pub created_at: Option<DateTime<Utc>>,
+        pub updated_at: Option<DateTime<Utc>>,
+    }
+
+    #[derive(Deserialize, PostgresMapper, Serialize)]
+    #[pg_mapper(table = "post")]
+    pub struct Post {
+        pub id: Option<Uuid>,
+        pub title: String,
+        pub user_id: String,
+        pub created_at: Option<DateTime<Utc>>,
+        pub updated_at: Option<DateTime<Utc>>,
     }
 }
 
@@ -79,15 +92,7 @@ mod db {
         let stmt = client.prepare(&_stmt).await.unwrap();
 
         client
-            .query(
-                &stmt,
-                &[
-                    &user_info.email,
-                    &user_info.first_name,
-                    &user_info.last_name,
-                    &user_info.username,
-                ],
-            )
+            .query(&stmt, &[&user_info.email, &user_info.full_name])
             .await?
             .iter()
             .map(|row| User::from_row_ref(row).unwrap())
@@ -143,13 +148,12 @@ mod handlers {
 
         for i in 0..5 {
             let user_number = i + 1;
-            let unique_username = format!("user{}", user_number);
-
             let user_info = User {
                 email: format!("user{}@example.com", user_number),
-                first_name: format!("John{}", user_number),
-                last_name: "Doe".to_string(),
-                username: unique_username,
+                full_name: format!("John Doe{}", user_number),
+                id: None,
+                created_at: None,
+                updated_at: None,
             };
 
             db::add_user(&client, user_info).await?;
