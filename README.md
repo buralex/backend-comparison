@@ -9,7 +9,7 @@ Just a boilerplate for starting backends on different languages for comparison.
    Start all backend services (in docker)
 
    ```bash
-   sh start_backends.sh --nodejs true --go true --rust true
+   bash start_backends.sh --nodejs true --go true --rust true
    ```
 
 2. Now you can access apis:
